@@ -9,14 +9,20 @@
 package io.renren.modules.app.controller;
 
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import io.renren.common.utils.R;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.modules.app.form.LoginForm;
+import io.renren.modules.app.form.WxLoginForm;
 import io.renren.modules.app.service.UserService;
 import io.renren.modules.app.utils.JwtUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,11 +39,19 @@ import java.util.Map;
 @RestController
 @RequestMapping("/app")
 @Api("APP登录接口")
+@Slf4j
 public class AppLoginController {
     @Autowired
     private UserService userService;
     @Autowired
     private JwtUtils jwtUtils;
+
+//    //注入id和密码
+//    @Value("${app-id}")
+//    private String appId;
+//
+//    @Value("${app-secret}")
+//    private String appSecret;
 
     /**
      * 登录
@@ -48,6 +62,18 @@ public class AppLoginController {
         //表单校验
         ValidatorUtils.validateEntity(form);
 
+        //微信支付接口路径
+//        String url = "https://api.weixin.qq.com/sns/jscondesession/";
+//
+//        HashMap<String,Object> map = new HashMap();
+//        map.put("appid",appId);
+//        map.put("secret",appSecret);
+//        map.put("js_code",form.getCode());
+//        map.put("grant_type","authorization_code");
+//        String response = HttpUtil.post(url, map);
+//        JSONObject jsonObject = JSONUtil.parseObj(response);
+//        String openid = (String) jsonObject.get("openid");
+//        log.info("openid->{}",openid);
         //用户登录
         long userId = userService.login(form);
 

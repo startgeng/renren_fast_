@@ -26,6 +26,8 @@ import java.util.Date;
 public class UserEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+
+
 	/**
 	 * 用户ID
 	 */
@@ -43,6 +45,27 @@ public class UserEntity implements Serializable {
 	 * 密码
 	 */
 	private String password;
+
+	/**
+	 * 微信的openId
+	 */
+	private String openId;
+
+	/**
+	 * 头像地址
+	 */
+	private String photo;
+
+	/**
+	 * 昵称
+	 */
+	private String nickname;
+
+	/**
+	 * 支付类型 1是支付宝 2是微信
+	 */
+	private Integer type;
+
 	/**
 	 * 创建时间
 	 */

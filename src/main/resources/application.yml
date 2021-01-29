@@ -74,3 +74,9 @@ renren:
     # token有效时长，7天，单位秒
     expire: 604800
     header: token
+application:
+  app-id: wx4cb8e9621950da45
+  app-secret: 6ed52c564f2593e916b379c3d06583eb
+  mch-id: 1526972031
+  key: qv9Kihy5TOJxGySzFO8pd4wCMg3tn6YK
+  cert-path: E:\software\apiclient_cert.p12
