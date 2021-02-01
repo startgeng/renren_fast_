@@ -25,8 +25,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Min;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.*;
@@ -195,6 +200,48 @@ public class WxLoginController {
         } catch (Exception e) {
             e.printStackTrace();
             return R.error("小程序支付模块错误");
+        }
+    }
+
+    //支付信息回调
+    @RequestMapping("/recieveMessage")
+    public void recieveMessage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        //设置格式
+        request.setCharacterEncoding("utf-8");
+        //读入流
+        Reader reader = request.getReader();
+        //缓冲流
+        BufferedReader buffer = new BufferedReader(reader);
+        //读取一行
+        String line = buffer.readLine();
+        StringBuffer temp = new StringBuffer();
+        if (line != null){
+            temp.append(line);
+            line = buffer.readLine();
+        }
+        buffer.close();
+        reader.close();
+        Map<String, String> map = WXPayUtil.xmlToMap(temp.toString());
+        String resultCode = map.get("result_code");
+        String returnCode = map.get("return_code");
+        if ("SUCCESS".equalsIgnoreCase(resultCode) && "SUCCESS".equalsIgnoreCase(returnCode)){
+            //商户收到通知,开始校验   流水号
+            String outTradeNo = map.get("out_trade_no");
+            UpdateWrapper updateWrapper = new UpdateWrapper();
+            updateWrapper.eq("code",outTradeNo);
+            updateWrapper.set("status",2);
+            orderService.update(updateWrapper);
+            response.setContentType("application/xml");
+            response.setCharacterEncoding("utf-8");
+            Writer writer = response.getWriter();
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
+            //写回成功信息给商户平台
+            bufferedWriter.write("<xml>\n" +
+                    "  <return_code><![CDATA[SUCCESS]]></return_code>\n" +
+                    "  <return_msg><![CDATA[OK]]></return_msg>\n" +
+                    "</xml>");
+            bufferedWriter.close();
+            writer.close();
         }
     }
 }
