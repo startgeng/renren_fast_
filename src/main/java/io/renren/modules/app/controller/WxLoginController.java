@@ -153,7 +153,7 @@ public class WxLoginController {
         wrapper = new QueryWrapper();
         OrderEntity entity = orderService.getOne(wrapper);
 
-        //向微信平台发出请求
+        //向微信平台发出请求  微信数据库里面存的是分,但是发送给微信平台的是元
         String amount = orderOne.getAmount().multiply(new BigDecimal("100")).intValue()+"";
         try {
             WXPay wxPay = new WXPay(myWXPayConfig);
@@ -204,24 +204,20 @@ public class WxLoginController {
     }
 
     //支付信息回调
-    @RequestMapping("/recieveMessage")
+    @PostMapping("/recieveMessage")
     public void recieveMessage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //设置格式
         request.setCharacterEncoding("utf-8");
-        //读入流
         Reader reader = request.getReader();
-        //缓冲流
         BufferedReader buffer = new BufferedReader(reader);
-        //读取一行
         String line = buffer.readLine();
         StringBuffer temp = new StringBuffer();
-        if (line != null){
+        while (line != null) {
             temp.append(line);
             line = buffer.readLine();
         }
         buffer.close();
         reader.close();
-        Map<String, String> map = WXPayUtil.xmlToMap(temp.toString());
+         Map<String, String> map = WXPayUtil.xmlToMap(temp.toString());
         String resultCode = map.get("result_code");
         String returnCode = map.get("return_code");
         if ("SUCCESS".equalsIgnoreCase(resultCode) && "SUCCESS".equalsIgnoreCase(returnCode)){
